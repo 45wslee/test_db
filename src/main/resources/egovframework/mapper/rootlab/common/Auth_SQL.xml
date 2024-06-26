@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?><!--Converted at: Wed May 11 15:49:38 KST 2016-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL 파일명 : Auth_SQL.xml
+    설명 : 공통 쿼리 관리
+    << 개정이력(Modification Information) >>
+    수정일          수정자    Version    수정 내용
+    ──────────    ─────   ───────    ────────────
+    2023.12.04    허동우    1.0        최초 생성
+-->
+<mapper namespace="AuthDAO">
+
+    <!-- 유저 권한 목록 조회 -->
+    <select id="AuthDAO.selectUserAuthList" resultType="EgovMap">
+        WITH menu AS (
+            SELECT t.authrt_cd, ARRAY_TO_STRING(ARRAY_AGG(t.menu_nm), ',') as menu_list
+            FROM (
+                    SELECT a.authrt_cd, a.menu_cd, a.authrt_yn, b.menu_nm
+                    FROM tb_menu_authrt a
+                    LEFT JOIN tb_menu b ON a.menu_cd = b.menu_cd
+                    WHERE b.parnt_menu_cd IS null
+                    ORDER BY a.authrt_cd, b.sort
+                 ) AS t
+            GROUP BY t.authrt_cd
+        )
+        SELECT *
+        FROM tb_auth a
+                 LEFT JOIN menu b ON a.role_cd = b.authrt_cd
+        ORDER BY role_cd
+    </select>
+
+    <!-- 유저 권한 목록 조회 -->
+    <select id="AuthDAO.selectUserAuthListCnt" resultType="int">
+        SELECT count(*)
+        FROM tb_auth
+        WHERE 1 = 1
+    </select>
+
+
+    <!-- 유저 권한 등록 -->
+    <insert id="AuthDAO.upsertUserAuth">
+        INSERT INTO tb_auth
+            (ROLE_CD, ROLE_NM, ROLE_DESC, USE_YN, SYSREGIDX, SYSREGDATE)
+        VALUES (#{roleCd}, #{roleNm}, #{roleDesc}, #{useYn}, #{rgtrSn}, NOW())
+        ON CONFLICT (ROLE_CD)
+            DO UPDATE SET ROLE_NM   = #{roleNm},
+                          ROLE_DESC = #{roleDesc},
+                          USE_YN    = #{useYn}
+    </insert>
+
+    <!-- 유저 권한 상세조회 -->
+    <select id="AuthDAO.selectUserAuthDetail" resultType="EgovMap">
+        SELECT *, false AS auth_yn
+        FROM (SELECT t1.MENU_CLS
+                   , t1.parnt_menu_cd
+                   , t1.MENU_CD
+                   , t1.MENU_NM AS MENU_NAME_LV1
+                   , t2.MENU_NM AS MENU_NAME_LV2
+                   , t3.MENU_NM AS MENU_NAME_LV3
+                   , t1.MENU_CD AS t1menu
+                   , t2.MENU_CD AS t2menu
+                   , t3.MENU_CD AS t3menu
+                   , t3.sort    AS t3sort
+              FROM tb_menu t1
+                       LEFT JOIN tb_menu t2 ON t1.menu_cd = t2.parnt_menu_cd AND t2.use_yn = 'Y'
+                       LEFT JOIN tb_menu t3 ON t2.menu_cd = t3.parnt_menu_cd AND t3.use_yn = 'Y'
+              WHERE t1.menu_cls = 0
+                AND t1.use_yn = 'Y') AS t
+        ORDER BY t.t1menu, t.t2menu, t.t3sort
+    </select>
+
+    <resultMap id="menuDetail" type="EgovMap" autoMapping="true">
+        <collection property="depth" select="AuthDAO.selectDepthList" column="{menuCd=MENU_CD}" javaType="java.util.ArrayList"/>
+    </resultMap>
+
+    <select id="AuthDAO.selectMenuDepth" resultType="EgovMap" resultMap="menuDetail">
+        SELECT (ROW_NUMBER() OVER()) AS ROWNUM, t.*
+        FROM (
+        select t1.menu_cd, t1.menu_nm, t1.menu_cls, t1.MENU_CD AS t1menu, t2.MENU_CD AS t2menu, t3.MENU_CD AS t3menu
+        FROM tb_menu t1
+        LEFT JOIN tb_menu t2 ON t1.menu_cd = t2.parnt_menu_cd AND t2.use_yn = 'Y'
+        LEFT JOIN tb_menu t3 ON t2.menu_cd = t3.parnt_menu_cd AND t3.use_yn = 'Y'
+        <where>
+            <if test="parntMenuCd != null and parntMenuCd != ''">
+                AND t1.parnt_menu_cd = #{menuCd}
+            </if>
+            <if test="parntMenuCd == null or parntMenuCd == ''">
+                AND t1.parnt_menu_cd IS NULL
+            </if>
+            AND t1.use_yn = 'Y'
+        </where>
+        ORDER BY t1.sort
+        ) as t
+    </select>
+
+    <select id="AuthDAO.selectDepthList" resultType="EgovMap">
+        select menu_cd, menu_nm, menu_cls
+        FROM tb_menu
+        WHERE parnt_menu_cd = #{menuCd}
+        AND use_yn = 'Y'
+        ORDER BY sort
+    </select>
+
+    <!-- 유저 권한 삭제 -->
+    <delete id="AuthDAO.deleteUserAuthDetail">
+        DELETE FROM tb_menu_authrt
+        WHERE authrt_cd = #{authrtCd}
+    </delete>
+
+    <!-- 유저 권한 상세 등록 -->
+    <insert id="AuthDAO.insertUserAuthDetail">
+        INSERT INTO tb_menu_authrt
+            (AUTHRT_CD, MENU_CD, AUTHRT_YN)
+        VALUES (#{authrtCd}, #{menuCd}, 'Y')
+    </insert>
+    
+    <resultMap id="authDetailTemp" type="EgovMap" autoMapping="true">
+        <collection property="detail" select="AuthDAO.selectUserMenuAuthDetailList" column="{roleCd=role_cd_temp}" javaType="java.util.ArrayList"/>
+    </resultMap>
+    
+    <select id="AuthDAO.selectUserAuthInfo" resultType="egovMap" resultMap="authDetailTemp">
+        SELECT role_cd, role_cd AS role_cd_temp, role_nm, role_desc, CASE WHEN use_yn = 'Y' THEN 'Y' ELSE 'N' END AS use_yn
+        FROM tb_auth
+        WHERE role_cd = #{roleCd}
+    </select>
+    
+    <select id="AuthDAO.selectUserMenuAuthDetailList" resultType="egovMap">
+        SELECT authrt_cd, menu_cd, authrt_yn
+        FROM tb_menu_authrt
+        WHERE authrt_yn = 'Y'
+          AND authrt_cd = #{roleCd}
+    </select>
+
+    <select id="AuthDAO.createRoleCd" resultType="String">
+        SELECT LPAD(t.cnt::TEXT, 6, 'AUTH0')
+        FROM (SELECT COUNT(*) + 1 AS cnt
+              FROM tb_auth) AS t
+    </select>
+</mapper>

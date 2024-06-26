@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!--Converted at: Wed May 11 15:49:38 KST 2016-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL 파일명 : Notice_SQL.xml
+    설명 : 공지사항 정보 관리
+    << 개정이력(Modification Information) >>
+    수정일          수정자    Version    수정 내용
+    ──────────    ─────   ───────    ────────────
+    2023.01.25    김태형    1.0        최초 생성
+-->
+<mapper namespace="MenuDAO">
+
+    <!-- 쿼리명 : 공지사항 목록 조회
+     설명 : 공지사항을 조회하기 위한 쿼리
+     수정일          수정자    수정내용
+     ──────────    ─────   ────────────
+     2023.01.25    김태형    최초 생성
+    -->
+    <select id="MenuDAO.getMenuList" resultType="egovMap">
+        WITH RECURSIVE tree_path(MENU_CD, PARNT_MENU_CD, MENU_NM, DEPTH, PATH, MENU_URL,MENU_ICON_CLS,USE_YN) AS (
+            SELECT MENU_CD::VARCHAR, PARNT_MENU_CD::VARCHAR, MENU_NM::VARCHAR, 0, MENU_CD::VARCHAR, MENU_URL::VARCHAR, MENU_ICON_CLS::VARCHAR,USE_YN::VARCHAR
+            FROM tb_menu
+            WHERE PARNT_MENU_CD IS NULL
+             <if test='markYn == "Y"'>
+                AND USE_YN='Y'
+            </if>
+            UNION ALL
+            SELECT t.MENU_CD, t.PARNT_MENU_CD, t.MENU_NM, tp.DEPTH + 1, CONCAT(tp.PATH, ',', t.MENU_CD), t.MENU_URL ,t.MENU_ICON_CLS,t.USE_YN
+            FROM tb_menu t
+                     INNER JOIN tree_path tp ON t.PARNT_MENU_CD = tp.MENU_CD
+           <if test='markYn == "Y"'>
+            WHERE t.USE_YN='Y'
+            </if>
+        )
+        SELECT a.MENU_CD, a.PARNT_MENU_CD, a.MENU_NM, a.DEPTH, a.PATH, a.MENU_URL, a.MENU_ICON_CLS, COUNT(b.MENU_CD) AS M_COUNT,a.USE_YN
+        FROM tree_path a
+            LEFT JOIN tb_menu b ON a.MENU_CD = b.PARNT_MENU_CD
+            <if test='markYn == "Y"'>
+             AND b.USE_YN = 'Y'
+            INNER JOIN tb_menu_authrt c ON a.MENU_CD = c.menu_cd
+            AND c.authrt_yn='Y'
+            AND c.authrt_cd =#{mbrAuth}
+            </if>
+        GROUP BY a.MENU_CD, a.PARNT_MENU_CD, a.MENU_NM, a.DEPTH, a.PATH, a.MENU_URL ,a.MENU_ICON_CLS,a.USE_YN
+        ORDER BY PATH
+    </select>
+
+    <insert id="MenuDAO.upsertMenu">
+        INSERT INTO tb_menu (MENU_CD, PARNT_MENU_CD, MENU_CLS, SORT, MENU_NM, MENU_URL, SYSTEM_YN, EXTERNAL_YN,MENU_ICON_CLS, USE_YN, RGTR_SN, RGTR_DT)
+        VALUES (
+                #{menuCd}, #{parntMenuCd}, #{menuCls}::INTEGER, #{sort}::INTEGER, #{menuNm}, #{menuUrl}, #{systemYn}, #{externalYn}, #{menuIconCls}, #{useYn}, #{rgtrSn}, NOW()
+               )  ON CONFLICT (menu_cd)
+        DO 
+        UPDATE SET
+            PARNT_MENU_CD = #{parntMenuCd},
+            MENU_CLS = #{menuCls}::INTEGER,
+            SORT = #{sort}::INTEGER,
+            MENU_NM = #{menuNm},
+            MENU_URL = #{menuUrl},
+            SYSTEM_YN = #{systemYn},
+            EXTERNAL_YN = #{externalYn},
+            MENU_ICON_CLS = #{menuIconCls},
+            USE_YN = #{useYn}
+    </insert>
+
+    <select id="MenuDAO.getMenuClsList" resultType="egovMap">
+        SELECT MENU_CD, PARNT_MENU_CD, MENU_CLS, MENU_NM
+        FROM tb_menu t
+        WHERE MENU_CLS = #{menuCls}
+        ORDER BY SORT
+    </select>
+
+    <select id="MenuDAO.getMenuInfo" resultType="egovMap">
+        SELECT MENU_CD, PARNT_MENU_CD, MENU_CLS, MENU_NM, SORT, MENU_URL, SYSTEM_YN, EXTERNAL_YN, MENU_ICON_CLS, USE_YN
+        FROM tb_menu t
+        WHERE MENU_CD = #{menuCd}
+    </select>
+
+    <update id="MenuDAO.deleteMenu">
+        UPDATE tb_menu
+        SET USE_YN = 'N'
+        WHERE MENU_CD = #{menuCd}
+    </update>
+</mapper>

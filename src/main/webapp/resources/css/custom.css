@@ -1,0 +1,64 @@
+/* --------------- ck editor ---------------- */
+.ck.ck-editor {
+    width: 100% !important;
+}
+.ck.ck-editor__main > .ck-read-only {
+    border: 0 !important;
+    padding: 0 !important;
+}
+.ck.ck-editor__editable.ck-focused:not(.ck-editor__nested-editable) {
+    border: 1px solid #ccced1 !important;
+    box-shadow: none !important;
+}
+.ck.ck-editor__main > .ck-read-only.ck-focused:not(.ck-editor__nested-editable) {
+    border: transparent !important;
+}
+.ck.ck-editor__main > .ck-read-only.ck-editor__editable_inline > :first-child {
+    margin-top: 0 !important;
+}
+.ck.ck-editor__main > .ck-read-only.ck-editor__editable_inline > :last-child {
+    margin-bottom: 0 !important;
+}
+.image img {
+    display: block;
+    width: 100%;
+}
+.ck-editor__editable_inline {
+    min-height: 300px;
+}
+.ck-read-only.ck-editor__editable_inline {
+    min-height: auto !important;
+}
+.ck .ck-link_selected {
+    background: transparent !important;
+    color: var(--rct-basic-color-blue);
+}
+.ck .ck-link_selected:hover {
+    text-decoration: underline;
+}
+.ck.ck-link-actions .ck-button.ck-link-actions__preview .ck-button__label {
+    color: var(--rct-basic-color-blue) !important;
+    font-family: "SUIT", "맑은 고딕", "돋움", Dotum, Arial, sans-serif !important;
+    font-weight: 500 !important;
+}
+.ck.ck-editor p,
+.ck.ck-editor span {
+    word-break: break-all !important;
+}
+
+[v-cloak] {
+    display: none;
+}
+
+/* number 토글 버튼 제거 */
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox  */
+input[type="number"] {
+    -moz-appearance: textfield;
+}

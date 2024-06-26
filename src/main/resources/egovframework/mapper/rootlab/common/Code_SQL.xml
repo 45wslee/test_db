@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CodeDAO">
+
+    <select id="CodeDAO.selectCodeList" resultType="EgovMap">
+        SELECT total_cd,
+        main_cd,
+        code_nm,
+        sort,
+        system_yn,
+        CASE WHEN use_yn = 'Y' THEN '사용'
+        ELSE '미사용'
+        END AS use_yn,
+        CASE WHEN rgtr_dt IS NOT NULL THEN TO_CHAR(rgtr_dt, 'YYYY-MM-DD HH24:MI:SS')
+        ELSE TO_CHAR(rgtr_dt,  'YYYY-MM-DD HH24:MI:SS')
+        END AS SYSREGDATE
+        FROM tb_commoncode
+        <where>
+            <choose>
+                <when test="subCd == '000'.toString()">
+                    AND sub_cd = #{subCd}
+                </when>
+                <when test="subCd != null and subCd != ''">
+                    AND sub_cd = #{subCd}
+                    AND use_yn = 'Y'
+                </when>
+                <otherwise>
+                    AND sub_cd != '000'
+                </otherwise>
+            </choose>
+            <if test="mainCd != null and mainCd != ''">
+                AND main_cd = #{mainCd}
+            </if>
+            <if test="codeNm != null and codeNm != ''">
+                AND code_nm LIKE CONCAT('%', #{codeNm}, '%')
+            </if>
+        </where>
+        <choose>
+            <when test="subCd != null and subCd != ''">
+                ORDER BY main_cd
+            </when>
+            <otherwise>
+                ORDER BY sort
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 코드 노출 순서 변경 -->
+    <update id="updateCodePriority">
+        <foreach collection="codeList" separator=";" item="item">
+            UPDATE tb_commoncode
+            SET SORT = #{item.sort},
+            SYSMODIDX = #{item.sysmodidx},
+            SYSMODDATE = NOW()
+            WHERE TOTAL_CD = #{item.totalCd}
+        </foreach>
+    </update>
+
+    <!-- 공통코드 추가 -->
+    <insert id="CodeDAO.insertCode">
+        INSERT INTO tb_commoncode (
+        TOTAL_CD,
+        MAIN_CD,
+        SUB_CD,
+        CODE_NM,
+        <if test="sort != null and sort != ''">
+            SORT,
+        </if>
+        <if test="useYn != null and useYn != ''">
+            USE_YN,
+        </if>
+        RGTR_ID,
+        RGTR_DT
+        ) VALUES (
+        #{totalCd},
+        #{mainCd},
+        #{subCd},
+        #{codeNm},
+        <if test="sort != null and sort != ''">
+            #{sort},
+        </if>
+        <if test="useYn != null and useYn != ''">
+            #{useYn},
+        </if>
+        #{rgtrSn},
+        NOW()
+        )
+    </insert>
+
+    <!-- 하위 공통코드 상세 정보 -->
+    <select id="CodeDAO.selectCodeInfo" resultType="EgovMap">
+        SELECT
+            X.PARNT_MAIN_CD,
+            X.PARNT_CODE_NM,
+            X.TOTAL_CD,
+            X.MAIN_CD,
+            X.SUB_CD,
+            X.CODE_NM,
+            X.SORT,
+            X.USE_YN,
+            X.SYSTEM_YN,
+            X.CODE_CNT
+        FROM (
+            SELECT b.MAIN_CD AS PARNT_MAIN_CD,
+            b.CODE_NM AS PARNT_CODE_NM,
+            a.TOTAL_CD,
+            a.MAIN_CD,
+            a.SUB_CD,
+            a.CODE_NM,
+            a.SORT,
+            a.USE_YN,
+            a.SYSTEM_YN,
+        (
+        SELECT COUNT(*)
+        FROM tb_commoncode
+        WHERE MAIN_CD = a.MAIN_CD
+        ) AS CODE_CNT
+        FROM tb_commoncode a
+        INNER JOIN tb_commoncode b ON a.MAIN_CD = b.MAIN_CD AND b.SUB_CD = '000'
+        <where>
+            <choose>
+                <when test="mainCd != null and mainCd != ''">
+                    AND a.MAIN_CD = #{mainCd}
+                    AND a.SUB_CD = '000'
+                </when>
+                <otherwise>
+                    a.TOTAL_CD = #{totalCd}
+                </otherwise>
+            </choose>
+        </where>
+        ) X
+    </select>
+
+    <!-- 공통코드 부모 정보 수정 (코드명)-->
+    <update id="CodeDAO.updateParentCode">
+        UPDATE tb_commoncode
+        SET CODE_NM = #{codeNm},
+            SYSMODIDX = #{sysmodidx},
+            SYSMODDATE = NOW()
+        WHERE TOTAL_CD = #{totalCd}
+    </update>
+
+    <!-- 공통코드 자식 정보 수정 (코드명 and 사용여부)-->
+    <update id="CodeDAO.updateChildrenCode">
+        UPDATE tb_commoncode
+        SET CODE_NM = #{codeNm},
+            MAIN_CD = #{mainCd},
+            SUB_CD = #{subCd},
+            USE_YN = #{useYn},
+            SYSTEM_YN = #{systemYn},
+            SYSMODIDX = #{sysmodidx},
+            SYSMODDATE = NOW()
+        WHERE TOTAL_CD = #{totalCd}
+    </update>
+
+    <!-- 공통코드 자식 정보 수정 (코드명 and 사용여부)-->
+    <insert id="CodeDAO.upsertCode">
+        INSERT INTO tb_commoncode (
+        TOTAL_CD,
+        MAIN_CD,
+        SUB_CD,
+        CODE_NM,
+        <if test="sort != null and sort != ''">
+            SORT,
+        </if>
+        <if test="useYn != null and useYn != ''">
+            USE_YN,
+        </if>
+        SYSTEM_YN,
+        RGTR_ID,
+        RGTR_DT
+        ) VALUES (
+        #{totalCd},
+        #{mainCd},
+        #{subCd},
+        #{codeNm},
+        <if test="sort != null and sort != ''">
+            #{sort},
+        </if>
+        <if test="useYn != null and useYn != ''">
+            #{useYn},
+        </if>
+        #{systemYn},
+        #{sysregidx},
+        NOW()
+        )  ON CONFLICT (TOTAL_CD)
+        DO UPDATE SET
+            CODE_NM = #{codeNm},
+            SORT = #{sort},
+            USE_YN = #{useYn},
+            SYSTEM_YN = #{systemYn},
+            MDFR_ID = #{sysregidx},
+            MDFR_DT = NOW()
+    </insert>
+</mapper>

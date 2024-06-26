@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!--Converted at: Wed May 11 15:49:38 KST 2016-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL 파일명 : Notice_SQL.xml
+    설명 : 공지사항 정보 관리
+    << 개정이력(Modification Information) >>
+    수정일          수정자    Version    수정 내용
+    ──────────    ─────   ───────    ────────────
+    2023.01.25    김태형    1.0        최초 생성
+-->
+<mapper namespace="NoticeDAO">
+    <!-- 쿼리명 : 공지사항 등록
+             설명 : 공지사항을 등록하기 위한 쿼리
+             수정일          수정자    수정내용
+             ──────────    ─────   ────────────
+             2023.01.25    김태형    최초 생성
+         -->
+    <insert id="NoticeDAO.insertNotice">
+        <selectKey keyProperty="ntcSn" resultType="java.lang.Long" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+
+        INSERT INTO tb_ntc (NTC_TTL, NTC_CN, RGTR_SN, RGTR_DT)
+        VALUES (#{ntcTtl}, #{ntcCn}, #{rgtrSn}, #{rgtrDt})
+    </insert>
+
+    <!-- 쿼리명 : 공지사항 조회
+         설명 : 공지사항을 조회하기 위한 쿼리
+         수정일          수정자    수정내용
+         ──────────    ─────   ────────────
+         2023.01.25    김태형    최초 생성
+     -->
+    <select id="NoticeDAO.selectNotice" resultType="xyz.rootlab.app.notice.dto.NoticeDto">
+        SELECT a.NTC_SN, a.NTC_TTL, a.NTC_CN, a.RGTR_SN, b.MBR_NM AS author, a.MDFR_DT AS LAST_MODIFIED_DATE
+        FROM tb_ntc a
+                 JOIN tb_mbr b
+                      ON a.RGTR_SN = b.MBR_SN
+        WHERE a.NTC_SN = #{ntcSn}
+    </select>
+
+    <!-- 쿼리명 : 공지사항 목록 조회
+     설명 : 공지사항을 조회하기 위한 쿼리
+     수정일          수정자    수정내용
+     ──────────    ─────   ────────────
+     2023.01.25    김태형    최초 생성
+ -->
+    <select id="NoticeDAO.noticeList" resultType="EgovMap">
+        SELECT a.NTC_SN, a.NTC_TTL, a.NTC_CN, a.RGTR_SN, b.MBR_NM AS author, a.MDFR_DT AS LAST_MODIFIED_DATE
+        FROM tb_ntc a
+                 JOIN tb_mbr b ON a.RGTR_SN = b.MBR_SN
+        ORDER BY a.NTC_SN
+        LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+    </select>
+
+    <!-- 쿼리명 : 공지사항 목록 조회
+     설명 : 공지사항을 조회하기 위한 쿼리
+     수정일          수정자    수정내용
+     ──────────    ─────   ────────────
+     2023.01.25    김태형    최초 생성
+    -->
+    <select id="NoticeDAO.noticeListCnt" resultType="int">
+        SELECT COUNT(*)
+        FROM tb_ntc a
+                 JOIN tb_mbr b ON a.RGTR_SN = b.MBR_SN
+    </select>
+</mapper>

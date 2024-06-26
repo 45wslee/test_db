@@ -1,0 +1,349 @@
+@charset "UTF-8";
+
+@font-face {
+    font-family: "SUIT";
+    font-weight: 100;
+    font-style: normal;
+    src: url("../fonts/SUIT/SUIT-Thin.eot");
+    src: url("../fonts/SUIT/SUIT-Thin.eot?#iefix") format("embedded-opentype"), url("../fonts/SUIT/SUIT-Thin.woff2") format("woff2"), url("../fonts/SUIT/SUIT-Thin.woff") format("woff"), url("../fonts/SUIT/SUIT-Thin.ttf") format("truetype");
+    font-display: swap;
+}
+@font-face {
+    font-family: "SUIT";
+    font-weight: 200;
+    font-style: normal;
+    src: url("../fonts/SUIT/SUIT-ExtraLight.eot");
+    src: url("../fonts/SUIT/SUIT-ExtraLight.eot?#iefix") format("embedded-opentype"), url("../fonts/SUIT/SUIT-ExtraLight.woff2") format("woff2"), url("../fonts/SUIT/SUIT-ExtraLight.woff") format("woff"), url("../fonts/SUIT/SUIT-ExtraLight.ttf") format("truetype");
+    font-display: swap;
+}
+@font-face {
+    font-family: "SUIT";
+    font-weight: 300;
+    font-style: normal;
+    src: url("../fonts/SUIT/SUIT-Light.eot");
+    src: url("../fonts/SUIT/SUIT-Light.eot?#iefix") format("embedded-opentype"), url("../fonts/SUIT/SUIT-Light.woff2") format("woff2"), url("../fonts/SUIT/SUIT-Light.woff") format("woff"), url("../fonts/SUIT/SUIT-Light.ttf") format("truetype");
+    font-display: swap;
+}
+@font-face {
+    font-family: "SUIT";
+    font-weight: 400;
+    font-style: normal;
+    src: url("../fonts/SUIT/SUIT-Regular.eot");
+    src: url("../fonts/SUIT/SUIT-Regular.eot?#iefix") format("embedded-opentype"), url("../fonts/SUIT/SUIT-Regular.woff2") format("woff2"), url("../fonts/SUIT/SUIT-Regular.woff") format("woff"), url("../fonts/SUIT/SUIT-Regular.ttf") format("truetype");
+    font-display: swap;
+}
+@font-face {
+    font-family: "SUIT";
+    font-weight: 500;
+    font-style: normal;
+    src: url("../fonts/SUIT/SUIT-Medium.eot");
+    src: url("../fonts/SUIT/SUIT-Medium.eot?#iefix") format("embedded-opentype"), url("../fonts/SUIT/SUIT-Medium.woff2") format("woff2"), url("../fonts/SUIT/SUIT-Medium.woff") format("woff"), url("../fonts/SUIT/SUIT-Medium.ttf") format("truetype");
+    font-display: swap;
+}
+@font-face {
+    font-family: "SUIT";
+    font-weight: 600;
+    font-style: normal;
+    src: url("../fonts/SUIT/SUIT-SemiBold.eot");
+    src: url("../fonts/SUIT/SUIT-SemiBold.eot?#iefix") format("embedded-opentype"), url("../fonts/SUIT/SUIT-SemiBold.woff2") format("woff2"), url("../fonts/SUIT/SUIT-SemiBold.woff") format("woff"), url("../fonts/SUIT/SUIT-SemiBold.ttf") format("truetype");
+    font-display: swap;
+}
+@font-face {
+    font-family: "SUIT";
+    font-weight: 700;
+    font-style: normal;
+    src: url("../fonts/SUIT/SUIT-Bold.eot");
+    src: url("../fonts/SUIT/SUIT-Bold.eot?#iefix") format("embedded-opentype"), url("../fonts/SUIT/SUIT-Bold.woff2") format("woff2"), url("../fonts/SUIT/SUIT-Bold.woff") format("woff"), url("../fonts/SUIT/SUIT-Bold.ttf") format("truetype");
+    font-display: swap;
+}
+@font-face {
+    font-family: "SUIT";
+    font-weight: 800;
+    font-style: normal;
+    src: url("../fonts/SUIT/SUIT-ExtraBold.eot");
+    src: url("../fonts/SUIT/SUIT-ExtraBold.eot?#iefix") format("embedded-opentype"), url("../fonts/SUIT/SUIT-ExtraBold.woff2") format("woff2"), url("../fonts/SUIT/SUIT-ExtraBold.woff") format("woff"), url("../fonts/SUIT/SUIT-ExtraBold.ttf") format("truetype");
+    font-display: swap;
+}
+@font-face {
+    font-family: "SUIT";
+    font-weight: 900;
+    font-style: normal;
+    src: url("../fonts/SUIT/SUIT-Heavy.eot");
+    src: url("../fonts/SUIT/SUIT-Heavy.eot?#iefix") format("embedded-opentype"), url("../fonts/SUIT/SUIT-Heavy.woff2") format("woff2"), url("../fonts/SUIT/SUIT-Heavy.woff") format("woff"), url("../fonts/SUIT/SUIT-Heavy.ttf") format("truetype");
+    font-display: swap;
+}
+
+/* reset */
+html,
+body,
+div,
+span,
+dl,
+dt,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+form,
+fieldset,
+legend,
+table,
+col,
+colgroup,
+thead,
+tfoot,
+tbody,
+tr,
+th,
+td,
+button,
+input,
+select,
+figure,
+figcaption,
+video,
+textarea {
+    font-family: "SUIT", "맑은 고딕", "돋움", Dotum, Arial, sans-serif;
+    font-weight: 600;
+    margin: 0;
+    padding: 0;
+    border: 0 none;
+}
+
+* {
+    outline: none;
+}
+
+*:focus {
+    outline: none;
+}
+
+*,
+*:before,
+*:after {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+*,
+html {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    font-size: 14px;
+    color: var(--rct-system-color);
+}
+
+body {
+    position: relative;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+ul,
+ol,
+li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+em,
+address {
+    font-style: normal;
+}
+
+img {
+    font-size: 0;
+    line-height: 0;
+    border: 0 none;
+}
+
+sup {
+    position: relative;
+    top: 2px;
+    font-size: 11px;
+    line-height: 100%;
+}
+
+table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+caption {
+    overflow: hidden;
+    width: 0;
+    height: 0;
+    font-size: 0;
+    line-height: 0;
+}
+
+th,
+td {
+    vertical-align: middle;
+    border: 1px solid var(--rct-border-color);
+}
+
+a {
+    text-decoration: none;
+    color: var(--rct-system-color);
+    cursor: pointer;
+}
+
+a:hover,
+a:focus,
+a:active {
+    text-decoration: none;
+}
+
+p,
+span {
+    -moz-word-break: keep-all;
+    -ms-word-break: keep-all;
+    word-break: keep-all;
+}
+
+input:disabled {
+    cursor: default;
+    background: var(--rct-input-disabled-bg-color);
+}
+
+input:read-only {
+    cursor: default;
+    background: var(--rct-input-disabled-bg-color);
+}
+
+textarea {
+    resize: none;
+}
+
+textarea:disabled {
+    background: var(--rct-input-disabled-bg-color);
+}
+
+button {
+    cursor: pointer;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.upload_input {
+    position: absolute;
+    left: -9999px;
+    visibility: hidden;
+}
+
+.cursor_pointer {
+    cursor: pointer;
+}
+
+/* IE - input close button delete */
+input::-ms-clear {
+    display: none;
+}
+
+input:-webkit-autofill {
+    -webkit-text-fill-color: var(--rct-system-color);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+input::placeholder {
+    color: var(--rct-input-placeholder-color);
+}
+
+input:-ms-input-placeholder {
+    color: var(--rct-input-placeholder-color);
+}
+
+input::-moz-placeholder {
+    color: var(--rct-input-placeholder-color);
+}
+
+input::-webkit-input-placeholder {
+    color: var(--rct-input-placeholder-color);
+}
+
+textarea::placeholder {
+    color: var(--rct-input-placeholder-color);
+}
+
+textarea:-ms-input-placeholder {
+    color: var(--rct-input-placeholder-color);
+}
+
+textarea::-moz-placeholder {
+    color: var(--rct-input-placeholder-color);
+}
+
+textarea::-webkit-input-placeholder {
+    color: var(--rct-input-placeholder-color);
+}
+
+input {
+    border: 1px solid var(--rct-border-color);
+    border-radius: 5px;
+    padding: 0 10px;
+    height: 40px;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+textarea {
+    border: 1px solid var(--rct-border-color);
+    border-radius: 5px;
+    padding: 10px;
+    min-height: 100px;
+}
+
+select {
+    border-radius: 5px;
+    border: 1px solid var(--rct-border-color);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    height: 40px;
+    padding: 0 34px 0 10px;
+    cursor: pointer;
+    background: transparent;
+    position: relative;
+    z-index: 3;
+}
+
+pre {
+    color: var(--rct-system-color);
+    font-family: "SUIT", "맑은 고딕", "돋움", Dotum, Arial, sans-serif;
+    text-wrap: nowrap;
+    margin: 0;
+}
+
+button,
+input {
+    -moz-appearance: none; /* Firefox */
+    -webkit-appearance: none; /* Safari and Chrome */
+    appearance: none;
+}

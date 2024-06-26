@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--<configuration>
+
+    <appender name="STDOUT"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[logback]%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="java.sql" level="DEBUG"/>
+    <logger name="egovframework" level="DEBUG"/>
+    <logger name="org.egovframe" level="DEBUG"/>
+    <logger name="jdbc.sqltiming" level="DEBUG"/>
+    <logger name="org.springframework" level="DEBUG"/>
+
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>-->
+
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <logger name="java.sql" level="OFF"/>
+    <logger name="egovframework" level="OFF"/>
+    <logger name="org.egovframe" level="OFF"/>
+    <logger name="jdbc.sqltiming" level="OFF"/>
+    <logger name="jdbc.sqlonly" level="OFF"/>
+    <logger name="jdbc.resultsettable" level="OFF"/>
+    <logger name="org.springframework.web" level="INFO"/>
+</configuration>
+        <!--
+            &lt;!&ndash;로그 파일 저장 위치&ndash;&gt;
+            <property name="LOGS_PATH" value="./logs"/>
+            <appender name="DAILY_ROLLING_FILE_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>${LOGS_PATH}/logback.log</file>
+                <encoder>
+                    <charset>UTF-8</charset>
+                    <pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{35} - %msg%n</pattern>
+                </encoder>
+                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                    <fileNamePattern>${LOGS_PATH}/logback.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+                    <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                        &lt;!&ndash; or whenever the file size reaches 100MB &ndash;&gt;
+                        <maxFileSize>100MB</maxFileSize>
+                        &lt;!&ndash; kb, mb, gb &ndash;&gt;
+                    </timeBasedFileNamingAndTriggeringPolicy>
+                    <maxHistory>30</maxHistory>
+                </rollingPolicy>
+            </appender>
+
+            <root level="INFO">
+                <appender-ref ref="DAILY_ROLLING_FILE_APPENDER"/>
+            </root>
+        </configuration>
+        -->

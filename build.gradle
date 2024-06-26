@@ -1,0 +1,197 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.12'
+    id 'io.spring.dependency-management' version '1.0.13.RELEASE'
+    id 'java'
+    id 'war'
+}
+
+group = 'com.digitalBadge'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    all {
+        exclude group: "org.egovframe.rte", module: "spring-modules-validation"
+        exclude group: "org.slf4j", module: "slf4j-log4j12"
+        exclude group: "org.apache.logging.log4j", module: "log4j-to-slf4j"
+        exclude group: "org.apache.logging.log4j", module: "log4j-slf4j-impl"
+        exclude group: "log4j", module: "log4j"
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://maven.egovframe.go.kr/maven/"
+    }
+    maven {
+        url "https://repo1.maven.org/maven2/"
+    }
+}
+
+// War file name
+bootWar {
+    archiveBaseName = 'web'
+    archiveFileName = 'gradle.war'
+    archiveVersion = '1.0.0'
+}
+
+ext.profile = (!project.hasProperty('profile') || !profile) ? 'local' : profile
+
+// Set source directory
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+        resources {
+            srcDirs "src/main/resources", "src/main/resources-${profile}"
+        }
+    }
+    test {
+        java {
+            srcDir 'src/test/java'
+        }
+        resources {
+            srcDir 'src/test/resources'
+        }
+    }
+}
+
+var egovVersion = "4.2.0"
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // jsp 사용을 위해 추가
+    implementation "org.apache.tomcat.embed:tomcat-embed-jasper"
+    implementation 'javax.servlet:jstl'
+    // 전자정부 라이브러리 추가
+    implementation "org.egovframe.rte:org.egovframe.rte.ptl.mvc:$egovVersion"
+    implementation "org.egovframe.rte:org.egovframe.rte.psl.dataaccess:$egovVersion"
+    implementation "org.egovframe.rte:org.egovframe.rte.fdl.idgnr:$egovVersion"
+    implementation "org.egovframe.rte:org.egovframe.rte.fdl.property:$egovVersion"
+    implementation "org.egovframe.rte:org.egovframe.rte.fdl.string:$egovVersion"
+    implementation "org.egovframe.rte:org.egovframe.rte.fdl.cmmn:$egovVersion"
+    implementation "org.egovframe.rte:org.egovframe.rte.fdl.logging:$egovVersion"
+    implementation 'org.apache.commons:commons-dbcp2'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:3.1.2'
+    runtimeOnly('com.mysql:mysql-connector-j:8.2.0')
+    // postgres
+    implementation 'org.postgresql:postgresql:42.5.4'
+    // EgovMultipartResolver
+    implementation 'commons-fileupload:commons-fileupload:1.5'
+
+    // naver lucy filter
+    implementation 'com.navercorp.lucy:lucy-xss-servlet:2.0.1'
+
+    // message converter
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-hibernate5:2.13.3"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.3"
+
+    // 쿼리문 확인 용도
+    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.0'
+
+    // jwt
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+
+    // gson
+    implementation 'com.google.code.gson:gson:2.10.1'
+
+    // poi(엑셀)
+    implementation 'org.apache.poi:poi:5.2.2'
+    implementation 'org.apache.poi:poi-ooxml:5.2.2'
+
+    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'javax.validation:validation-api:2.0.1.Final'
+
+    implementation group: 'org.springframework.mobile', name: 'spring-mobile-device', version: '1.1.5.RELEASE'
+    implementation group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '3.0.5'
+
+    // web client
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // java swagger
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.6'
+    compileOnly 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // 스프링 배치
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+    testImplementation 'org.springframework.batch:spring-batch-test'
+
+    // queryDsl 설정 start
+    implementation "com.querydsl:querydsl-jpa"
+    implementation "com.querydsl:querydsl-core"
+    implementation "com.querydsl:querydsl-collections"
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa" // querydsl JPAAnnotationProcessor 사용 지정
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api" // java.lang.NoClassDefFoundError (javax.annotation.Generated) 대응 코드
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api" // java.lang.NoClassDefFoundError (javax.annotation.Entity) 대응 코드
+    // queryDsl 설정 end
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation('org.assertj:assertj-core:3.24.2')
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.1'
+
+
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    runtimeOnly 'org.apache.taglibs:taglibs-standard-impl:1.2.5'
+
+    compileOnly 'org.projectlombok:lombok'
+    compileOnly 'org.springframework.boot:spring-boot-starter-tomcat'
+
+}
+
+tasks {
+    processResources {
+        duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
+    }
+    bootJar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'xyz.rootlab.EgovBootApplication'
+    }
+}
+
+// 테스트 파일 제외
+test {
+    exclude 'src/test/**'
+}
+
+tasks.withType(Test) {
+    enabled = false
+}
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// 이하 QeuryDsl 사용 시 사용
+///// Querydsl 빌드 옵션 (옵셔널)
+def generated = 'src/main/generated'
+
+///// querydsl QClass 파일 생성 위치를 지정
+tasks.withType(JavaCompile) {
+    options.getGeneratedSourceOutputDirectory().set(file(generated))
+}
+
+///// java source set 에 querydsl QClass 위치 추가
+sourceSets {
+    main.java.srcDirs += [generated]
+}
+
+///// gradle clean 시에 QClass 디렉토리 삭제
+clean {
+    delete file(generated)
+}

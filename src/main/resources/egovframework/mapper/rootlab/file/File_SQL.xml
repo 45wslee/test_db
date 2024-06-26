@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><!--Converted at: Wed May 11 15:49:38 KST 2016-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL 파일명 : File_SQL.xml
+    설명 : 파일 정보 관리
+    << 개정이력(Modification Information) >>
+    수정일          수정자    Version    수정 내용
+    ──────────    ─────   ───────    ────────────
+    2023.01.25    김태형    1.0        최초 생성
+-->
+<mapper namespace="FileDAO">
+
+    <!-- 쿼리명 : 파일 정보 등록
+         설명 : 파일 정보를 등록하기 위한 쿼리
+         수정일          수정자    수정내용
+         ──────────    ─────   ────────────
+         2023.01.25    김태형    최초 생성
+     -->
+    <insert id="FileDAO.insertFileList">
+        INSERT INTO tb_file (RFRNC_SN, RFRNC_TBL, ORGNL_FILE_NM, SRVR_FILE_NM, FILE_EXTN_NM, FILE_PATH, FILE_SZ, FILE_DWNLD_AUTHRT_CD, FILE_DEL_AUTHRT_CD, FILE_TYPE, USE_YN, RGTR_ID, RGTR_DT)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.rfrncSn}, #{item.rfrncTbl}, #{item.orgnlFileNm}, #{item.srvrFileNm}, #{item.fileExtnNm}, #{item.filePath}, #{item.fileSz}, #{item.fileDwnldAuthrtCd}, #{item.fileDelAuthrtCd}, #{item.fileType}, #{item.useYn}, #{item.rgtrId}, #{item.rgtrDt})
+        </foreach>
+    </insert>
+
+    <!-- 쿼리명 : 참조 테이블의 파일 목록 조회
+         설명 : 참조 테이블의 파일 목록을 조회하기 위한 쿼리
+         수정일          수정자    수정내용
+         ──────────    ─────   ────────────
+         2023.01.25    김태형    최초 생성
+     -->
+    <select id="FileDAO.selectFileList" resultType="xyz.rootlab.common.file.dto.FileDto">
+        SELECT FILE_SN, RFRNC_SN, RFRNC_TBL, ORGNL_FILE_NM, SRVR_FILE_NM, FILE_SZ
+        FROM tb_file
+        WHERE RFRNC_SN = #{rfrncSn}
+          AND RFRNC_TBL = #{rfrncTbl}
+    </select>
+
+    <!-- 쿼리명 : 파일 정보 조회
+         설명 : 파일 정보를 조회하기 위한 쿼리
+         수정일          수정자    수정내용
+         ──────────    ─────   ────────────
+         2023.01.25    김태형    최초 생성
+     -->
+    <select id="FileDAO.selectFile" resultType="xyz.rootlab.common.file.vo.FileVO">
+        SELECT FILE_SN,
+               RFRNC_SN,
+               RFRNC_TBL,
+               ORGNL_FILE_NM,
+               SRVR_FILE_NM,
+               FILE_EXTN_NM,
+               FILE_PATH,
+               FILE_SZ,
+               FILE_DWNLD_AUTHRT_CD,
+               FILE_DEL_AUTHRT_CD
+        FROM tb_file
+        WHERE FILE_SN = #{fileSn}
+    </select>
+
+    <!-- 쿼리명 : 파일 목록 조회
+         설명 : 파일 목록을 조회하기 위한 쿼리
+         수정일          수정자    수정내용
+         ──────────    ─────   ────────────
+         2023.01.25    김태형    최초 생성
+     -->
+    <select id="FileDAO.selectFileListInFileSn" resultType="xyz.rootlab.common.file.vo.FileVO">
+        SELECT FILE_SN, RFRNC_SN, RFRNC_TBL, ORGNL_FILE_NM, SRVR_FILE_NM, FILE_EXTN_NM, FILE_PATH, FILE_SZ, FILE_DWNLD_AUTHRT_CD, FILE_DEL_AUTHRT_CD, RGTR_ID
+        FROM tb_file
+        WHERE FILE_SN IN
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!-- 쿼리명 : 파일 삭제
+         설명 : 파일을 삭제하기 위한 쿼리
+         수정일          수정자    수정내용
+         ──────────    ─────   ────────────
+         2023.01.25    김태형    최초 생성
+     -->
+    <delete id="FileDAO.deleteAll">
+        DELETE
+        FROM tb_file
+        WHERE FILE_SN IN
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <!-- 쿼리명 : 파일 목록 조회
+       설명 : 참조 정보로부터 파일 목록 조회
+       수정일          수정자    수정내용
+       ──────────    ─────   ────────────
+       2023.01.25    김태형    최초 생성
+   -->
+    <select id="FileDAO.selectFileListByRfrncInfo" resultType="xyz.rootlab.common.file.vo.FileVO">
+        SELECT FILE_SN, RFRNC_SN, RFRNC_TBL, ORGNL_FILE_NM, SRVR_FILE_NM, FILE_EXTN_NM, FILE_PATH, FILE_SZ, FILE_DWNLD_AUTHRT_CD, FILE_DEL_AUTHRT_CD, RGTR_ID
+        FROM tb_file
+        WHERE rfrnc_sn = #{rfrncSn}
+          AND rfrnc_tbl = #{rfrncTbl}
+          AND file_type = #{fileType}
+    </select>
+</mapper>

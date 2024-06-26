@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!--Converted at: Wed May 11 15:49:38 KST 2016-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MngSystemDAO">
+    <sql id="memberSearch">
+        <if test='searchWrd != "" and searchWrd != null'>
+            <choose>
+                <when test='searchCnd1 == "1"'>
+                    AND a.mbr_id LIKE CONCAT('%', #{searchWrd},'%')
+                </when>
+                <when test='searchCnd1 == "2"'>
+                    AND a.mbr_nm LIKE CONCAT('%', #{searchWrd},'%')
+                </when>
+                <otherwise>
+                    AND(
+                        a.mbr_id LIKE CONCAT('%', #{searchWrd},'%') or
+                        a.mbr_nm LIKE CONCAT('%', #{searchWrd},'%')
+                    )
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+
+    <select id="memberListCnt" resultType="int">
+        SELECT count(a.mbr_sn)
+        FROM tb_mbr a
+        LEFT JOIN tb_auth b ON a.mbr_auth=b.role_cd AND b.use_yn='Y'
+        WHERE 1=1
+        <include refid="memberSearch"/>
+    </select>
+
+    <select id="selectMemberList" resultType="EgovMap">
+       SELECT 
+            a.mbr_sn,
+            a.mbr_id,
+            a.mbr_pswd,
+            a.mbr_nm,
+            a.mbr_telno,
+            a.mbr_email,
+            a.mbr_auth,
+            TO_CHAR(a.rgtr_dt, 'YYYY-MM-DD HH24:MI:SS') AS rgtr_dt,
+            b.role_nm
+        FROM tb_mbr a
+        LEFT JOIN tb_auth b ON a.mbr_auth=b.role_cd AND b.use_yn='Y'
+        WHERE 1=1
+        <include refid="memberSearch"/>
+        ORDER BY a.mbr_sn DESC
+        LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+    </select>
+</mapper>
